@@ -2,11 +2,11 @@
 
 See how popular your published datasets are.
 
-# Introduction
+## Introduction
 
 The GBIF API allows you to query the download statistics of your published datasets. This script demonstrates how to do this.
 
-# Dependencies
+## Dependencies
 
 This script uses Python (2.7.x) and the following modules:
 
@@ -17,7 +17,7 @@ This script uses Python (2.7.x) and the following modules:
 - [pytz](http://pytz.sourceforge.net/): install with `pip install pytz`
 - [Requests](http://docs.python-requests.org/en/latest/): install with `pip install requests`
 
-# Run the script
+## Run the script
 
 run `python get_gbif_stats.py > out.tsv`
 
