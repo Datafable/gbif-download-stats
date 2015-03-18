@@ -19,10 +19,19 @@ This script uses Python (2.7.x) and the following modules:
 
 ## Run the script
 
-run `python get_gbif_stats.py > out.tsv`
+```
+usage: get_gbif_stats.py <filter_type> <instance_name>
 
-The script will fetch all datasets published by a Belgian publisher, and print the download statistics for 2013 and 2014.
+    filter_type: you can filter datasets either by country or
+                organization. To specify this, set this parameter
+                to "country" or "organization".
 
-If you're not interested in the Belgian datasets, change the value of variable `PUBLISHED_COUNTRY`. A list of all valid names can be found [here](http://www.gbif.org/country).
+    instance_name: if you have chosen filter_type "country", then
+                    the instance_name should be the owining
+                    organization's country given as a ISO 639-1
+                    (2 letter) country code. If filter_type is
+                    "organization", instance_name should be the
+                    owning organization's UUID key.
+```
 
-The script reports on the number of downloads and the number of occurrences downloaded in 2013, 2014 and overall. It only counts `succeeded` downloads (which is why it may slightly differ from the number of downloads that is reported on the GBIF portal).
+The script will fetch all datasets published by the instance (either a country or an organization), and statistics of successful downloads per dataset and per year. The script reports the number of download events and the number of downloaded occurrences. Since only successful downloads are considered, these numbers may slightly differ from the numbers shown at the GBIF portal.
