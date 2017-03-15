@@ -86,24 +86,24 @@ def write_stats(datasets):
             try:
                 download_data = get_downloaded_records(ds['key'])
                 if download_data is None:
-                    print 'no downloads for {0}'.format(ds['key'])
+                    print('no downloads for {0}'.format(ds['key']))
                 else:
                     download_data['dataset_key'] = [ds['key']] * len(download_data)
                     all_data.append(download_data)
             except Exception as e:
-                print 'Problem with dataset {0}'.format(ds)
+                print('Problem with dataset {0}'.format(ds))
     all_df = pd.concat(all_data)
     tot_data_succeeded = all_df[all_df['status'] == 'SUCCEEDED'][['numberRecords', 'year', 'dataset_key']]
     result = tot_data_succeeded.groupby(['year', 'dataset_key']).agg({'numberRecords': {'recordsDownloaded': sum, 'downloadEvents': len}})
-    print result.to_csv()
+    print(result.to_csv())
 
 def main():
     if len(sys.argv) != 3:
-        print DOCUMENTATION_MESSAGE
+        print(DOCUMENTATION_MESSAGE)
         sys.exit(-1)
     filter_type = sys.argv[1]
     if filter_type not in ['country', 'organization']:
-        print 'filter_type should be "country" or "organization"'
+        print('filter_type should be "country" or "organization"')
         sys.exit(-1)
     instance_name = sys.argv[2]
     datasets = fetch_datasets(filter_type=filter_type, instance_name=instance_name)
