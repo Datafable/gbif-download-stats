@@ -32,14 +32,15 @@ def fetch_dataset_data(key):
     """ fetch and merge all pages with download statistics for one dataset """
     more_results_to_find = True
     offset = 0
-    limit = 20
+    limit = 100
     download_stats = []
     while more_results_to_find:
         page = fetch_dataset_datapage(key, offset, limit)
         download_stats += page
-        offset += 20
+        offset += 100
         if len(page) == 0:
             more_results_to_find = False
+        print(str(key) + ": " + str(offset))
     return download_stats
 
 def get_downloaded_records(key):
@@ -60,20 +61,22 @@ def get_downloaded_records(key):
 def fetch_datasets(filter_type=None, instance_name=None):
     """ Fetch all datasets for this country """
     more_results_to_find = True
-    offset = 0
+    offset = 0 # Done: 0, 
     limit = 20
     all_datasets = []
     while more_results_to_find:
         if filter_type == 'country':
-            params = {'publishingCountry': instance_name, 'offset': offset, 'limit': limit, 'type': 'occurrence'}
-        elif filter_type == 'organization':
-            params = {'publishingOrg': instance_name, 'offset': offset, 'limit': limit, 'type': 'occurrence'}
+            params = {'publishingCountry': instance_name, 'offset': offset, 'limit': limit, 'type': 'sampling_event'}
+        elif filter_type == 'publisher':
+            params = {'publishingOrg': instance_name, 'offset': offset, 'limit': limit, 'type': 'sampling_event'}
+        elif filter_type == 'host':
+            params = {'hostingOrg': instance_name, 'offset': offset, 'limit': limit, 'type': 'sampling_event'}
         r = requests.get('http://api.gbif.org/v1/dataset/search', params=params)
         datasets = r.json()['results']
         all_datasets += datasets
         offset += 20
-        if len(datasets) == 0:
-            more_results_to_find = False
+        # if len(datasets) == 0:
+        more_results_to_find = False
     return all_datasets
 
 def write_stats(datasets):
@@ -93,7 +96,7 @@ def write_stats(datasets):
             except Exception as e:
                 print('Problem with dataset {0}'.format(ds))
     all_df = pd.concat(all_data)
-    tot_data_succeeded = all_df[all_df['status'] == 'SUCCEEDED'][['numberRecords', 'year', 'dataset_key']]
+    tot_data_succeeded = all_df[(all_df['status'] == 'SUCCEEDED') | (all_df['status'] == 'FILE_ERASED')][['numberRecords', 'year', 'dataset_key']]
     result = tot_data_succeeded.groupby(['year', 'dataset_key']).agg({'numberRecords': {'recordsDownloaded': sum, 'downloadEvents': len}})
     print(result.to_csv())
 
@@ -102,8 +105,8 @@ def main():
         print(DOCUMENTATION_MESSAGE)
         sys.exit(-1)
     filter_type = sys.argv[1]
-    if filter_type not in ['country', 'organization']:
-        print('filter_type should be "country" or "organization"')
+    if filter_type not in ['country', 'publisher', 'host']:
+        print('filter_type should be "country", "publisher" or "host"')
         sys.exit(-1)
     instance_name = sys.argv[2]
     datasets = fetch_datasets(filter_type=filter_type, instance_name=instance_name)
